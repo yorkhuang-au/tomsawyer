@@ -1,0 +1,45 @@
+Copy (Select * From vw_ts_person order by person_numb) To 'c:\\york\\ts-gems\\person.csv' With CSV header
+
+Copy (Select * From vw_ts_alt_p order by alt_person_numb) To 'c:\\york\\ts-gems\\alt_p.csv' With CSV header
+
+Copy (Select * From vw_ts_address order by address_number) To 'c:\\york\\ts-gems\\address.csv' With CSV header
+
+Copy (Select * From vw_ts_person_with_master order by person_numb) To 'c:\\york\\ts-gems\\person_with_master.csv' With CSV header
+
+Copy (Select * From vw_ts_person_with_master where is_master=1) To 'c:\\york\\ts-gems\\person_with_master_only.csv' With CSV header
+
+Copy (Select * From vw_ts_person_with_master_alt order by person_numb) To 'c:\\york\\ts-gems\\person_with_master_alt.csv' With CSV header
+
+Copy (Select * From vw_ts_xref_dr ) To 'c:\\york\\ts-gems\\xref_dr.csv' With CSV header
+
+Copy (Select * From vw_ts_holding_current ) To 'c:\\york\\ts-gems\\holding_current.csv' With CSV header
+
+Select count(*) From vw_ts_person
+
+
+USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM "file:///c:\\york\\ts-gems\\person.csv" AS pcsv
+CREATE (person:PERSON {pid:pcsv.row_num, person_numb:pcsv.person_numb, name:pcsv.name, birth_date:pcsv.str_birth_date, is_current:pcsv.is_current })
+
+create index on :PERSON(person_numb)
+
+create index on :PERSON(name)
+
+match (p1:PERSON)
+with p1
+match (p2:PERSON)
+where id(p2)<>id(p1) and p1.person_numb=p2.person_numb
+create (p1)-(:KNOWN_AS)-(p2)
+
+
+USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM "file:///c:\\york\\ts-gems\\person.csv" AS pcsv
+match (p1:PERSON {person_numb:pcsv.person_numb}), (p2:PERSON {person_numb:pcsv.alt_person_numb)
+CREATE (p2)-(:ALT_AS)->(p1)
+
+
+USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM "file:///c:\\york\\ts-gems\\address.csv" AS pcsv
+CREATE (a:ADDRESS {address_numb: pcsv.address_number, address:pcsv.address}) 
+
+

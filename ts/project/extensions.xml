@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TSX>
+
+	<drawingViewActionDefinitions>
+		<folder name="On Demand Actions">
+			<action name="Find Person" class="action.FindActionItemDefinition"/>
+			<action name="Get ALT Person" class="action.GetALTPersonActionItemDefinition"/> 
+			<action name="Find Organisation" class="action.FindOrganisationActionItemDefinition"/>
+			<action name="Get Org Par-Sub" class="action.GetOrgParSubActionItemDefinition"/>
+		</folder>
+	</drawingViewActionDefinitions>
+
+	<javascriptDefinitions>
+		<script name="find.js" src="../target/classes/javascript/find.js"/>
+	</javascriptDefinitions>
+
+</TSX>

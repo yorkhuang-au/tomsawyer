@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>tspj-tutorials-programming-incremental</artifactId>
+	<name>Tom Sawyer Perspectives Java Tutorials Programming Incremental</name>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>com.tomsawyer.perspectives</groupId>
+		<artifactId>tspj-examples-and-tutorials</artifactId>
+		<version>7.1.1</version>
+	</parent>
+	
+	<properties>
+		<exec.main.class>RDFIncrementalIntegratorApplication</exec.main.class>
+		<mac.dock.name>Incremental Integrator</mac.dock.name>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+<build>
+        <plugins>
+            
+        
+        <plugin>
+                <groupId>com.tomsawyer.licensing</groupId>
+                <artifactId>ts-maven-licensing-plugin</artifactId>
+                <version>1.0.2</version>
+                <executions>
+                    <execution>
+                        <id>setup-licensing</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>setup</goal>
+                        </goals>
+                        <configuration>
+                            <licenseServerURL>http://licensing.tomsawyer.com:80/HW2831K2497WJTGXCSDKUYVNX</licenseServerURL>
+                            <licenseName>NSW Office Of State Revenue .OSR., Evaluation 5768, Tom Sawyer Version 7.1, Development Distribution</licenseName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

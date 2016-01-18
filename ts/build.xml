@@ -1,0 +1,159 @@
+<project name="tutorials" default="usage">
+
+	<property name="INSTALLDIR" value="C:\\Apps\\Tom Sawyer Software\\Tom Sawyer Perspectives\\7.1\\Java"/>
+	<property name="OUTPUT" value="target/classes"/>
+    <property name="SRCS" value="src/main/java"/>
+	<property name="TS_LIB_DIR" value="${INSTALLDIR}/lib"/>
+	<property name="JDK" value="1.7"/>
+	<property name="arguments" value=""/>
+	
+	<property name="PSQL" value="c:\\opt\\jdbc\\psql"/>
+	<property name="ORACLE_JDBC" value="c:\\opt\\jdbc\\oracle"/>
+
+	<condition property="isMacOs">
+		<os family="mac"/>
+	</condition>
+
+    <target name="usage">
+		<echo>
+			Usage:
+			ant clean: clean compiled files and output
+			ant compile: compile the tutorial
+			ant run: run the tutorial
+		</echo>
+	</target>
+
+	<target name="clean" description="Delete compiled files and output">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${OUTPUT}" includes="**/*"/>
+		</delete>
+	</target>
+
+	<target name="setup"
+		description="Define path variables used by other targets">
+		<path id="libpath">
+			<fileset dir="${ORACLE_JDBC}">
+				<include name="ojdbc5.jar"/>
+			</fileset>
+			<fileset dir="${TS_LIB_DIR}">
+				<include name="ts*dev.jar"/>
+				<include name="thirdparty/*.jar"/>
+			</fileset>
+			<fileset dir="">
+				<include name="**/*.jar"/>
+			</fileset>
+			<fileset dir="${INSTALLDIR}/bin">
+				<include name="**/*.jar"/>
+			</fileset>
+			<fileset dir="${INSTALLDIR}">
+				<include name="**/*.jar"/>
+			</fileset>
+		</path>
+	</target>
+
+	<target name="compile" depends="setup,isapplication"
+		description="Compile class files and copy resources to the output directory.">
+		<mkdir dir="${OUTPUT}"/>
+
+		<javac fork="true"
+			memoryInitialSize="256m"
+			memoryMaximumSize="512m"
+			destdir="${OUTPUT}"
+			source="${JDK}"
+			target="${JDK}"
+			srcdir="${SRCS}"
+			encoding="UTF-8"
+			includeantruntime="false">
+			<classpath>
+				<path refid="libpath"/>
+			</classpath>
+		</javac>
+
+		<patternset id="resources">
+			<exclude name="**/*.java"/>
+		</patternset>
+
+		<copy todir="${OUTPUT}">
+			<fileset dir="${SRCS}/../resources">
+				<patternset refid="resources"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="isapplication"
+		description="Conditionally sets properties for application or project viewer mode">
+		<available property="IS_APPLICATION" file="${SRCS}"/>
+
+		<condition property="MAIN_CLASS"
+			value="com.tomsawyer.projectviewer.TSPerspectivesViewer">
+			<not>
+				<available file="${SRCS}"/>
+			</not>
+		</condition>
+	</target>
+
+	<target name="findmain"
+		description="Create a property file that contains the name of the main class."
+		depends="isapplication"
+		if="IS_APPLICATION">
+
+		<fileset dir="${SRCS}" id="mains" includes="**/*.java">
+			<contains text="public static void main"/>
+		</fileset>
+		<property name="main" refid="mains"/>
+		<propertyfile file="build.properties">
+			<entry key="MAIN_CLASS" value="${main}"/>
+		</propertyfile>
+		<replaceregexp file="build.properties"
+			match=".java"
+			replace=""/>
+		<property file="build.properties"/>
+		<delete file="build.properties"/>
+	</target>
+
+	<target name="run" depends="run-mac, run-non-mac">
+	</target>
+
+	<target name="run-mac" depends="compile,findmain"
+			description="Run the Project Viewer to view this tutorial." if="isMacOs">
+
+		<pathconvert property="project.path">
+			<fileset dir="project/" includes="*.tsp"/>
+		</pathconvert>
+
+		<java fork="true"
+				maxmemory="512m"
+				classname="${MAIN_CLASS}"
+				dir="" >
+			<classpath>
+				<path refid="libpath"/>
+				<dirset dir="${OUTPUT}"/>
+			</classpath>
+			<arg id="projectFile" path="${project.path}"/>
+			<arg line = "${arguments}"/>
+			<jvmarg value="-Xdock:name=Incremental Integrator"/>
+		</java>
+	</target>
+
+	<target name="run-non-mac" depends="compile,findmain"
+			description="Run the Project Viewer to view this tutorial." unless="isMacOs">
+
+		<pathconvert property="project.path">
+			<fileset dir="project/" includes="*.tsp"/>
+		</pathconvert>
+
+		<java fork="true"
+				maxmemory="512m"
+				classname="${MAIN_CLASS}"
+				dir="" >
+			<classpath>
+				<path refid="libpath"/>
+				<dirset dir="${OUTPUT}"/>
+			</classpath>
+			<arg id="projectFile" path="${project.path}"/>
+			<arg line = "${arguments}"/>
+		</java>
+	</target>
+
+
+</project>
